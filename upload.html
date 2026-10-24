@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CISF Master-Entry</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+    }
+
+    header {
+      text-align: center;
+      background-color: #4CAF50;
+      color: white;
+      padding: 1rem 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    h2 {
+      color: red;
+      margin-bottom: 20px;
+    }
+
+    .form-container {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+
+    label {
+      flex: 1;
+      margin-right: 10px;
+    }
+
+    input, select {
+      flex: 2;
+      padding: 5px;
+      margin-right: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    a {
+      color: blue;
+      text-decoration: underline;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>CPCL CISF Medical System</h1>
+    </header>
+    <form class="form-container">
+      <h2>Personal Details</h2>
+      <div class="form-group">
+        <label for="prno">Prno</label>
+        <input type="text" id="prno" name="prno">
+        
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" readonly>
+      </div>
+      
+      <div class="form-group">
+        <label for="grade">Grade</label>
+        <input type="text" id="grade" name="grade" readonly>
+        
+        <label for="designation">Desgn</label>
+        <input type="text" id="designation" name="designation" readonly>
+      </div>
+
+      <div class="form-group">
+        <label for="basicPay">Basic Pay</label>
+        <input type="text" id="basicPay" name="basicPay" readonly>
+        
+        <label for="activeCode">Activecode</label>
+        <input type="text" id="activeCode" name="activeCode" readonly>
+      </div>
+
+      <div class="form-group">
+        <label for="dateOfJoining">Date of Joining</label>
+        <input type="text" id="dateOfJoining" name="dateOfJoining" readonly>
+        
+        <label for="dateOfLeaving">Date of Leaving</label>
+        <input type="text" id="dateOfLeaving" name="dateOfLeaving" readonly>
+      </div>
+
+      <div class="form-group">
+        <label for="statusCode">Status</label>
+        <input type="text" id="statusCode" name="statusCode" readonly>
+        
+        <label for="accountingYear">Accounting Year</label>
+       <select id="accouting year">
+        <option>2023</option>
+        <option>2024</option>
+       </select>
+      </div>
+
+      <button type="button" id="fetchDetails">Fetch Details</button>
+    </form>
+  </div>
+  <script>
+    const data = [
+      { PRNO: "9498", EMPNAME: "K VIJAY KUMAR", GRADE: "4", ACTIVE_CODE: "Y", DATE_OF_JOINING: "4/4/2012", DATE_OF_LEAVING: "NULL", STATUS_CODE: "N", DESGN: "CONST", BASIC_PAY: 100000 },
+      { PRNO: "9507", EMPNAME: "S SAJEEV", GRADE: "4", ACTIVE_CODE: "Y", DATE_OF_JOINING: "6/2/2012", DATE_OF_LEAVING: "NULL", STATUS_CODE: "N", DESGN: "CONST", BASIC_PAY: 100000 },
+      { PRNO: "9509", EMPNAME: "G DEIVENDRAN", GRADE: "4", ACTIVE_CODE: "Y", DATE_OF_JOINING: "6/7/2012", DATE_OF_LEAVING: "NULL", STATUS_CODE: "N", DESGN: "ASI/EXE", BASIC_PAY: 100000 },
+      { PRNO: "9518", EMPNAME: "P KRISHNAMOORTHY", GRADE: "4", ACTIVE_CODE: "Y", DATE_OF_JOINING: "6/18/2012", DATE_OF_LEAVING: "NULL", STATUS_CODE: "N", DESGN: "HC/GD", BASIC_PAY: 100000 },
+      { PRNO: "9523", EMPNAME: "S M HARIJAN", GRADE: "4", ACTIVE_CODE: "Y", DATE_OF_JOINING: "6/26/2012", DATE_OF_LEAVING: "NULL", STATUS_CODE: "N", DESGN: "CONST", BASIC_PAY: 100000 },
+      { PRNO: "9535", EMPNAME: "B RAMACHANDRAN", GRADE: "4", ACTIVE_CODE: "Y", DATE_OF_JOINING: "7/16/2012", DATE_OF_LEAVING: "NULL", STATUS_CODE: "N", DESGN: "CONST", BASIC_PAY: 100000 },
+      { PRNO: "9539", EMPNAME: "K  EDISON", GRADE: "4", ACTIVE_CODE: "Y", DATE_OF_JOINING: "7/23/2012", DATE_OF_LEAVING: "NULL", STATUS_CODE: "N", DESGN: "HC/GD", BASIC_PAY: 100000 },
+      { PRNO: "9546", EMPNAME: "V  N  REDDY", GRADE: "4", ACTIVE_CODE: "Y", DATE_OF_JOINING: "8/13/2012", DATE_OF_LEAVING: "NULL", STATUS_CODE: "N", DESGN: "CONST", BASIC_PAY: 100000 },
+      { PRNO: "9547", EMPNAME: "MUKTA  MAMATA  SINGH", GRADE: "4", ACTIVE_CODE: "Y", DATE_OF_JOINING: "8/13/2012", DATE_OF_LEAVING: "NULL", STATUS_CODE: "N", DESGN: "L/CONST", BASIC_PAY: 100000 }
+    ];
+
+    document.getElementById('fetchDetails').addEventListener('click', function () {
+      const prno = document.getElementById('prno').value;
+      const employee = data.find(emp => emp.PRNO === prno);
+
+      if (employee) {
+        document.getElementById('name').value = employee.EMPNAME;
+        document.getElementById('grade').value = employee.GRADE;
+        document.getElementById('designation').value = employee.DESGN;
+        document.getElementById('basicPay').value = employee.BASIC_PAY;
+        document.getElementById('activeCode').value = employee.ACTIVE_CODE;
+        document.getElementById('dateOfJoining').value = employee.DATE_OF_JOINING;
+
+        
+        const joiningDate = new Date(employee.DATE_OF_JOINING);
+        const leavingDate = new Date(joiningDate.setFullYear(joiningDate.getFullYear() + 3));
+        document.getElementById('dateOfLeaving').value = leavingDate.toLocaleDateString();
+
+        document.getElementById('statusCode').value = employee.STATUS_CODE;
+      } else {
+        alert('No employee found with the entered PRNO.');
+      }
+    });
+  </script>
+</body>
+</html>

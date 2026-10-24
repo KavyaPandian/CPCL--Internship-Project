@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPCL CISF Medical System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+        .header {
+            text-align: center;
+            color: blue;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .transaction-header {
+            color: red;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .section-header {
+            background-color: #e6f3ff;
+            padding: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #b8d6ff;
+            color: red;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+        }
+        .form-row label {
+            font-weight: bold;
+        }
+        input, select {
+            padding: 5px;
+            width: 200px;
+        }
+        input[readonly] {
+            background-color: #f5f5f5;
+        }
+        .submit-btn {
+            padding: 8px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+        .error {
+            color: red;
+            margin-top: 5px;
+        }
+    </style>                
+</head>
+<body>
+    <div class="container">
+        <div class="header">CPCL CISF Medical System</div>
+        <div class="transaction-header">CISF MEDICAL TRANSACTIONS</div>
+        
+        <div class="section-header">Personal Details</div>
+        <div class="form-grid">
+            <div class="form-row">
+                <label>Prno</label>
+                <input type="text" id="prno" onchange="fetchOfficerDetails()">
+            </div>
+            <div class="form-row">
+                <label>Name</label>
+                <input type="text" id="name" readonly>
+            </div>
+            <div class="form-row">
+                <label>Grade</label>
+                <input type="text" id="grade" readonly>
+            </div>
+            <div class="form-row">
+                <label>Desgn:</label>
+                <input type="text" id="designation" readonly>
+            </div>
+            <div class="form-row">
+                <label>ENTRYDATE</label>
+                <input type="text" id="entrydate" readonly>
+            </div>
+            <div class="form-row">
+                <label>ENTRYTIME</label>
+                <input type="text" id="entrytime" readonly>
+            </div>
+            
+            <script>
+                window.onload = function() {
+                    const entryTimeField = document.getElementById("entrytime");
+                    const currentTime = new Date().toLocaleTimeString(); 
+                    entryTimeField.value = currentTime;
+                };
+                
+            </script>
+        </div>
+
+        <div class="section-header">Bill Details</div>
+        <div class="form-grid">
+            <div class="form-row">
+                <label>Closing Balance Domiciliary</label>
+                <input type="text" id="closing_balance_domi" readonly>
+            </div>
+            <div class="form-row">
+                <label>Opening Balance chronic</label>
+                <input type="text" id="opening_balance_chronic" readonly>
+            </div>
+            <div class="form-row">
+                <label>Opening Balance Domiciliary</label>
+                <input type="text" id="opening_balance_domi" readonly>
+            </div>
+            <div class="form-row">
+                <label>Available Balance chronic</label>
+                <input type="text" id="available_balance_chronic" readonly>
+            </div>
+            <div class="form-row">
+                <label>Available Balance Domiciliary</label>
+                <input type="text" id="available_balance_domi" readonly>
+            </div>
+            <div class="form-row">
+                <label>Available Balance Hospital</label>
+                <input type="text" id="available_balance_hospital" readonly>
+            </div>
+            <div class="form-row">
+                <label>Opening Balance Hospital</label>
+                <input type="text" id="opening_balance_hospital" readonly>
+            </div>
+            <div class="form-row">
+                <label>Type:</label>
+                <select id="type" onchange="updateBalances()">
+                    <option value="D">Domiciliary</option>
+                    <option value="H">Hospital</option>
+                    <option value="C">Chronic</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label>Acc_Year:</label>
+                <select id="acc_year">
+                    <option>2024</option>
+                    <option>2023</option>
+                    <option>2022</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label>Claimforwhom:</label>
+                <select id="claim_for">
+                    <option>Self</option>
+                    <option>Dependent</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label>ADVICE_CODE</label>
+                <select id="advice_code">
+                    <option>M09</option>
+                    <option>M10</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label>Claim Amount</label>
+                <input type="number" id="claim_amount" onchange="calculateSanctionAmount()">
+            </div>
+            <div class="form-row">
+                <label>Bill Date:</label>
+                <input type="date" id="bill_date">
+            </div>
+            <div class="form-row">
+                <label>Sanction Amount:</label>
+                <input type="number" id="sanction_amount" readonly>
+            </div>
+            <div class="form-row">
+                <label>TRANS_TYPE</label>
+                <select id="trans_type">
+                    <option value="D">D</option>
+                    <option value="H">H</option>
+                    <option value="C">C</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label>Closing Balance Chronic:</label>
+                <input type="text" id="closing_balance_chronic" readonly>
+            </div>
+            <div class="form-row">
+                <label>Closing Balance Domi:</label>
+                <input type="text" id="closing_balance_domi_final" readonly>
+            </div>
+            <div class="form-row">
+                <label>Closing_Hospital_balance</label>
+                <input type="text" id="closing_balance_hospital" readonly>
+            </div>
+        </div>
+<center>
+        <button class="submit-btn" onclick="submitForm()">Submit</button>
+    </center>
+    </div>
+
+        <script>
+            
+            const csvData = `ORGANISATION_CODE,LOCATION_CODE,PRNO,EMPNAME,GRADE,ACTIVE_CODE,DATE_OF_JOINING,DATE_OF_LEAVING,STATUS_CODE,DESGN,BASIC_PAY
+            CPCLCPCL,MAN,9498,K VIJAY KUMAR,4,Y,4/4/2012,NULL,N,CONST,100000
+            CPCLCPCL,MAN,9507,S SAJEEV,4,Y,6/2/2012,NULL,N,CONST,100000
+            CPCLCPCL,MAN,9509,G DEIVENDRAN,4,Y,6/7/2012,NULL,N,ASI/EXE,100000
+            CPCLCPCL,MAN,9518,P KRISHNAMOORTHY,4,Y,6/18/2012,NULL,N,HC/GD,100000
+            CPCLCPCL,MAN,9523,S M HARIJAN,4,Y,6/26/2012,NULL,N,CONST,100000
+            CPCLCPCL,MAN,9535,B RAMACHANDRAN,4,Y,7/16/2012,NULL,N,CONST,100000
+            CPCLCPCL,MAN,9539,K EDISON,4,Y,7/23/2012,NULL,N,HC/GD,100000
+            CPCLCPCL,MAN,9546,V N REDDY,4,Y,8/13/2012,NULL,N,CONST,100000
+            CPCLCPCL,MAN,9547,MUKTA MAMATA SINGH,4,Y,8/13/2012,NULL,N,L/CONST,100000`;
+    
+          
+            const parseCSV = (data) => {
+                const rows = data.trim().split("\n");
+                const headers = rows[0].split(",");
+                return rows.slice(1).map(row => {
+                    const values = row.split(",");
+                    return headers.reduce((acc, header, index) => {
+                        acc[header.trim()] = values[index].trim();
+                        return acc;
+                    }, {});
+                });
+            };
+    
+            const officers = parseCSV(csvData);
+    
+            function fetchOfficerDetails() {
+                const prno = document.getElementById("prno").value.trim();
+                const officer = officers.find(o => o.PRNO === prno);
+    
+                if (officer) {
+                    document.getElementById("name").value = officer.EMPNAME;
+                    document.getElementById("grade").value = officer.GRADE;
+                    document.getElementById("designation").value = officer.DESGN;
+                    document.getElementById("entrydate").value = officer.DATE_OF_JOINING;
+                } else {
+                    alert("Officer not found");
+                    clearOfficerDetails();
+                }
+            }
+    
+            function clearOfficerDetails() {
+                document.getElementById("name").value = "";
+                document.getElementById("grade").value = "";
+                document.getElementById("designation").value = "";
+                document.getElementById("entrydate").value = "";
+            }
+    </script>
+    <script>
+            
+            const officerDataSet = [
+                { PRNO: "9498", EMPNAME: "K VIJAY KUMAR", GRADE: "4", ACTIVE_CODE: "Y", DATE_OF_JOINING: "4/4/2012", DATE_OF_LEAVING: "NULL", STATUS_CODE: "N", DESGN: "CONST", BASIC_PAY: 100000 },
+                { PRNO: "9507", EMPNAME: "S SAJEEV", GRADE: "4", ACTIVE_CODE: "Y", DATE_OF_JOINING: "6/2/2012", DATE_OF_LEAVING: "NULL", STATUS_CODE: "N", DESGN: "CONST", BASIC_PAY: 100000 },
+                { PRNO: "9509", EMPNAME: "G DEIVENDRAN", GRADE: "4", ACTIVE_CODE: "Y", DATE_OF_JOINING: "6/7/2012", DATE_OF_LEAVING: "NULL", STATUS_CODE: "N", DESGN: "ASI/EXE", BASIC_PAY: 100000 },
+                { PRNO: "9518", EMPNAME: "P KRISHNAMOORTHY", GRADE: "4", ACTIVE_CODE: "Y", DATE_OF_JOINING: "6/18/2012", DATE_OF_LEAVING: "NULL", STATUS_CODE: "N", DESGN: "HC/GD", BASIC_PAY: 100000 },
+                { PRNO: "9523", EMPNAME: "S M HARIJAN", GRADE: "4", ACTIVE_CODE: "Y", DATE_OF_JOINING: "6/26/2012", DATE_OF_LEAVING: "NULL", STATUS_CODE: "N", DESGN: "CONST", BASIC_PAY: 100000 },
+                { PRNO: "9535", EMPNAME: "B RAMACHANDRAN", GRADE: "4", ACTIVE_CODE: "Y", DATE_OF_JOINING: "7/16/2012", DATE_OF_LEAVING: "NULL", STATUS_CODE: "N", DESGN: "CONST", BASIC_PAY: 100000 },
+                { PRNO: "9539", EMPNAME: "K  EDISON", GRADE: "4", ACTIVE_CODE: "Y", DATE_OF_JOINING: "7/23/2012", DATE_OF_LEAVING: "NULL", STATUS_CODE: "N", DESGN: "HC/GD", BASIC_PAY: 100000 },
+                { PRNO: "9546", EMPNAME: "V  N  REDDY", GRADE: "4", ACTIVE_CODE: "Y", DATE_OF_JOINING: "8/13/2012", DATE_OF_LEAVING: "NULL", STATUS_CODE: "N", DESGN: "CONST", BASIC_PAY: 100000 },
+                { PRNO: "9547", EMPNAME: "MUKTA  MAMATA  SINGH", GRADE: "4", ACTIVE_CODE: "Y", DATE_OF_JOINING: "8/13/2012", DATE_OF_LEAVING: "NULL", STATUS_CODE: "N", DESGN: "L/CONST", BASIC_PAY: 100000 }
+            ];
+        
+            let officerData = null;
+            let balanceData = {
+                domiciliary: { opening: 22257.00, available: 18514.00, closing: 21757.00 },
+                chronic: { opening: 19500.00, available: 19500.00, closing: 19500.00 },
+                hospital: { opening: 315000.00, available: 315000.00, closing: 315000.00 }
+            };
+        
+            function initializeDatetime() {
+                const now = new Date();
+                document.getElementById('entrydate').value = now.toLocaleDateString('en-GB');
+                updateEntryTime();
+            }
+        
+            function updateEntryTime() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-US', { 
+                    hour12: false,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                document.getElementById('entrytime').value = timeString;
+            }
+        
+            function fetchOfficerDetails() {
+                const prno = document.getElementById('prno').value;
+                const officer = officerDataSet.find(o => o.PRNO === prno);
+                
+                if (officer) {
+                    officerData = {
+                        name: officer.EMPNAME,
+                        grade: officer.GRADE,
+                        designation: officer.DESGN,
+                        activeCode: officer.ACTIVE_CODE,
+                        dateOfJoining: officer.DATE_OF_JOINING,
+                        basicPay: officer.BASIC_PAY
+                    };
+        
+                    updateOfficerDetails();
+                    initializeBalances();
+                    updateBalances();
+                } else {
+                    alert('Officer not found');
+                    clearOfficerDetails();
+                }
+            }
+        
+            function updateOfficerDetails() {
+                if (!officerData) return;
+        
+                document.getElementById('name').value = officerData.name;
+                document.getElementById('grade').value = officerData.grade;
+                document.getElementById('designation').value = officerData.designation;
+                document.getElementById('entrydate').value = officerData.dateOfJoining;
+            }
+        
+            function clearOfficerDetails() {
+                document.getElementById('name').value = '';
+                document.getElementById('grade').value = '';
+                document.getElementById('designation').value = '';
+                document.getElementById('entrydate').value = '';
+                officerData = null;
+            }
+        
+            function initializeBalances() {
+                const basicPay = parseFloat(officerData.basicPay);
+                balanceData = {
+                    domiciliary: { opening: basicPay * 0.2, available: basicPay * 0.2, closing: basicPay * 0.2 },
+                    chronic: { opening: basicPay * 0.1, available: basicPay * 0.1, closing: basicPay * 0.1 },
+                    hospital: { opening: basicPay * 3, available: basicPay * 3, closing: basicPay * 3 }
+                };
+            }
+        
+            function updateBalances() {
+                const type = document.getElementById('type').value;
+                let balances;
+        
+                switch(type) {
+                    case 'D':
+                        balances = balanceData.domiciliary;
+                        break;
+                    case 'H':
+                        balances = balanceData.hospital;
+                        break;
+                    case 'C':
+                        balances = balanceData.chronic;
+                        break;
+                }
+        
+                document.getElementById('opening_balance_domi').value = balanceData.domiciliary.opening.toFixed(2);
+                document.getElementById('available_balance_domi').value = balanceData.domiciliary.available.toFixed(2);
+                document.getElementById('closing_balance_domi').value = balanceData.domiciliary.closing.toFixed(2);
+                document.getElementById('closing_balance_domi_final').value = balanceData.domiciliary.closing.toFixed(2);
+        
+                document.getElementById('opening_balance_chronic').value = balanceData.chronic.opening.toFixed(2);
+                document.getElementById('available_balance_chronic').value = balanceData.chronic.available.toFixed(2);
+                document.getElementById('closing_balance_chronic').value = balanceData.chronic.closing.toFixed(2);
+        
+                document.getElementById('opening_balance_hospital').value = balanceData.hospital.opening.toFixed(2);
+                document.getElementById('available_balance_hospital').value = balanceData.hospital.available.toFixed(2);
+                document.getElementById('closing_balance_hospital').value = balanceData.hospital.closing.toFixed(2);
+            }
+        
+            function calculateSanctionAmount() {
+                const claimAmount = parseFloat(document.getElementById('claim_amount').value) || 0;
+                const type = document.getElementById('type').value;
+                let sanctionAmount = claimAmount;
+            
+                
+                switch(type) {
+                    case 'D':
+                        sanctionAmount = Math.min(claimAmount, balanceData.domiciliary.available);
+                        balanceData.domiciliary.available -= sanctionAmount;
+                        balanceData.domiciliary.closing = balanceData.domiciliary.available;
+                        break;
+                    case 'H':
+                        sanctionAmount = Math.min(claimAmount, balanceData.hospital.available);
+                        balanceData.hospital.available -= sanctionAmount;
+                        balanceData.hospital.closing = balanceData.hospital.available;
+                        break;
+                    case 'C':
+                        sanctionAmount = Math.min(claimAmount, balanceData.chronic.available);
+                        balanceData.chronic.available -= sanctionAmount;
+                        balanceData.chronic.closing = balanceData.chronic.available;
+                        break;
+                }
+            
+                
+                document.getElementById('sanction_amount').value = sanctionAmount.toFixed(2);
+            
+              
+                updateBalances();
+            }
+            
+            
+            async function submitForm() {
+                if (!officerData) {
+                    alert('Please fetch officer details first');
+                    return;
+                }     
+
+            const formData = {
+                prno: document.getElementById('prno').value,
+                name: document.getElementById('name').value,
+                grade: document.getElementById('grade').value,
+                designation: document.getElementById('designation').value,
+                entryDate: document.getElementById('entrydate').value,
+                entryTime: document.getElementById('entrytime').value,
+                type: document.getElementById('type').value,
+                accYear: document.getElementById('acc_year').value,
+                claimFor: document.getElementById('claim_for').value,
+                adviceCode: document.getElementById('advice_code').value,
+                claimAmount: document.getElementById('claim_amount').value,
+                billDate: document.getElementById('bill_date').value,
+                sanctionAmount: document.getElementById('sanction_amount').value,
+                transType: document.getElementById('trans_type').value,
+                closingBalanceDomi: document.getElementById('closing_balance_domi_final').value,
+                closingBalanceChronic: document.getElementById('closing_balance_chronic').value,
+                closingBalanceHospital: document.getElementById('closing_balance_hospital').value
+            };
+
+            console.log('Submitting form data:', formData);
+            
+            alert('Transaction submitted successfully!');
+        }
+
+        function updateBalances() {
+            const type = document.getElementById('type').value;
+            let balances;
+            
+            
+            switch(type) {
+                case 'D':
+                    balances = balanceData.domiciliary;
+                    break;
+                case 'H':
+                    balances = balanceData.hospital;
+                    break;
+                case 'C':
+                    balances = balanceData.chronic;
+                    break;
+            }
+        
+        
+            document.getElementById('opening_balance_domi').value = balanceData.domiciliary.opening.toFixed(2);
+            document.getElementById('available_balance_domi').value = balanceData.domiciliary.available.toFixed(2);
+            document.getElementById('closing_balance_domi').value = balanceData.domiciliary.closing.toFixed(2);
+            document.getElementById('closing_balance_domi_final').value = balanceData.domiciliary.closing.toFixed(2);
+        
+            document.getElementById('opening_balance_chronic').value = balanceData.chronic.opening.toFixed(2);
+            document.getElementById('available_balance_chronic').value = balanceData.chronic.available.toFixed(2);
+            document.getElementById('closing_balance_chronic').value = balanceData.chronic.closing.toFixed(2);
+        
+            document.getElementById('opening_balance_hospital').value = balanceData.hospital.opening.toFixed(2);
+            document.getElementById('available_balance_hospital').value = balanceData.hospital.available.toFixed(2);
+            document.getElementById('closing_balance_hospital').value = balanceData.hospital.closing.toFixed(2);
+        }
+        function calculateSanctionAmount() {
+            const claimAmount = parseFloat(document.getElementById('claim_amount').value) || 0;
+            const type = document.getElementById('type').value;
+            let sanctionAmount = claimAmount;
+        
+            
+            switch(type) {
+                case 'D':
+                    sanctionAmount = Math.min(claimAmount, balanceData.domiciliary.available);
+                    break;
+                case 'H':
+                    sanctionAmount = Math.min(claimAmount, balanceData.hospital.available);
+                    break;
+                case 'C':
+                    sanctionAmount = Math.min(claimAmount, balanceData.chronic.available);
+                    break;
+            }
+        
+            document.getElementById('sanction_amount').value = sanctionAmount.toFixed(2);
+            
+
+            updateClosingBalances(sanctionAmount);
+        }
+        
+        function calculateSanctionAmount() {
+            const claimAmount = parseFloat(document.getElementById('claim_amount').value) || 0;
+            const type = document.getElementById('type').value;
+            let sanctionAmount = claimAmount;
+        
+      
+            switch(type) {
+                case 'D':
+                    sanctionAmount = Math.min(claimAmount, balanceData.domiciliary.available);
+                    balanceData.domiciliary.available -= sanctionAmount;
+                    balanceData.domiciliary.closing = balanceData.domiciliary.available;
+                    break;
+                case 'H':
+                    sanctionAmount = Math.min(claimAmount, balanceData.hospital.available);
+                    balanceData.hospital.available -= sanctionAmount;
+                    balanceData.hospital.closing = balanceData.hospital.available;
+                    break;
+                case 'C':
+                    sanctionAmount = Math.min(claimAmount, balanceData.chronic.available);
+                    balanceData.chronic.available -= sanctionAmount;
+                    balanceData.chronic.closing = balanceData.chronic.available;
+                    break;
+            }
+        
+           
+            document.getElementById('sanction_amount').value = sanctionAmount.toFixed(2);
+        
+            
+            updateBalances();
+        }
+        
+                
+    
+    </script>
+</body>
+</html>
